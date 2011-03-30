@@ -11,10 +11,8 @@ class Hiromi
 
   def compile_template(string)
     scanner = Scanner.new
-    tokens = scanner.tokenize(string)
-
-    parser = Parser.new
-    self.node_list = parser.parse(tokens)
+    parser = Parser.new(scanner.tokenize(string))
+    self.node_list = parser.parse()
   end
 
   def render(context={})

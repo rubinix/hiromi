@@ -18,7 +18,6 @@ class Scanner
     end
 
     result
-
   end
 
   def scan_tag()
@@ -32,11 +31,12 @@ class Scanner
     end
 
     if text.start_with?('{{')
+      text = text[2...-2].strip
       [:variable_tag, text]
     elsif text.start_with?('{%')
+      text = text[2...-2].strip
       [:block_tag, text]
     end
-
   end
 
   def scan_text()
@@ -50,7 +50,6 @@ class Scanner
     end
 
     [:static, text]
-
   end
 
   # Scans the string until the pattern is matched. Returns the substring

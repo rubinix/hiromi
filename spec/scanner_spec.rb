@@ -29,7 +29,7 @@ describe "Scanner" do
       scanner = Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[1]
-      token.should == [:variable_tag, "{{ target }}"]
+      token.should == [:variable_tag, "target"]
     end
   end
 
@@ -39,7 +39,7 @@ describe "Scanner" do
       scanner = Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[0]
-      token.should == [:block_tag, "{% if passes_spec? %}"]
+      token.should == [:block_tag, "if passes_spec?"]
     end
   end
 
