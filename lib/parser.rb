@@ -20,9 +20,8 @@ class Parser
         #Add the token back to the list if we're supposed to exit upon parsing it
         if parse_until.include?(token[1])
             self.prepend_token(token)
-            return nodelist
+            return node_list
         end
-
         node_list << create_block_node(token)
       end
     end
@@ -31,7 +30,12 @@ class Parser
   end
 
   def create_block_node(token)
-    type = token.split[0]
+    block_type = token[1].split[0]
+
+    if block_type == 'if'
+      return IfNode.create(self, token)
+    end
+
   end
 
   def next_token()
@@ -39,7 +43,7 @@ class Parser
   end
 
   def remove_first_token()
-    self.toeksn.shift()
+    self.tokens.shift()
   end
 
   def prepend_token(token)
@@ -96,35 +100,38 @@ end
 
 class IfNode < Node
 
-  attr_accessor :nodelist_true, :nodelist_false, :var
+  attr_accessor :node_list_true, :node_list_false, :var
 
-  def initialize(var, nodelist_true, nodelist_false=nil)
-    self.nodelist_true = nodelist_true
-    self.nodelist_false = nodelist_false
+  def initialize(var, node_list_true, node_list_false=nil)
+    self.var = var
+    self.node_list_true = node_list_true
+    self.node_list_false = node_list_false
   end
 
   def render(context)
-    if self.var.eval(context)
-      return self.nodelist_true.render(context)
+    # if self.var.eval(context)
+    if context[var.to_sym] == true
+      return self.node_list_true.render(context)
     else
-      return self.nodelist_false.render(context)
+      return self.node_list_false.render(context)
     end
   end
 
-  def fun(parser, token)
+  def self.create(parser, token)
     # get the parts after the block type
-    parts = token.split.slice(1..-1)
-    nodelist_true = parser.parse(['else', 'endif'])
+    parts = token[1].split.slice(1..-1)
+    node_list_true = parser.parse(['else', 'endif'])
     token = parser.next_token()
+    var = parts.first
 
-    if token.contents == 'else'
-      nodelist_false = parser.parse(['endif'])
+    if token[1] == 'else'
+      node_list_false = parser.parse(['endif'])
       parser.remove_first_token()
     else
-      nodelist_false = NodeList.new
+      node_list_false = NodeList.new
     end
 
-    IfNode.new(..., nodelist_true, nodelist_false)
+    IfNode.new(var, node_list_true, node_list_false)
   end
 
 end

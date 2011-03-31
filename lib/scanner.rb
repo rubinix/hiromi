@@ -40,7 +40,7 @@ class Scanner
   end
 
   def scan_text()
-    text = scan_until_exclusive(/{{.*?}}/)
+    text = scan_until_exclusive(/{{.*?}}|{%.*?%}/)
 
     if text.nil?
       # Couldn't find any otag, which means the rest is just static text.

@@ -2,6 +2,11 @@
 
 Hiromi is a templating language that is meant to initially be a port of the Djano templating library.  This library is in it's infancy and is NOT ready for use.
 
+== Credit and inspriation
+Some algorithms, ideas, and inspiration come from the work of:
+*The Django templating system - see http://www.djangoproject.com/
+*defunkt's Mustache template library - see https://github.com/defunkt/mustache
+
 == Contributing to hiromi
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
