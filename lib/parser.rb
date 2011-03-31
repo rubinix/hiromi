@@ -1,4 +1,5 @@
 require 'stringio'
+require 'token'
 
 class Parser
 
@@ -12,13 +13,13 @@ class Parser
     node_list = NodeList.new
 
     while (token=self.next_token())
-      if token[0] == :static
-        node_list << StaticNode.new(token[1])
-      elsif token[0] == :variable_tag
-        node_list << VariableNode.new(token[1])
-      elsif token[0] == :block_tag
+      if token.type == :static
+        node_list << StaticNode.new(token.contents)
+      elsif token.type == :variable_tag
+        node_list << VariableNode.new(token.contents)
+      elsif token.type == :block_tag
         #Add the token back to the list if we're supposed to exit upon parsing it
-        if parse_until.include?(token[1])
+        if parse_until.include?(token.contents)
             self.prepend_token(token)
             return node_list
         end
@@ -30,7 +31,7 @@ class Parser
   end
 
   def create_block_node(token)
-    block_type = token[1].split[0]
+    block_type = token.contents.split[0]
 
     if block_type == 'if'
       return IfNode.create(self, token)
@@ -74,10 +75,10 @@ end
 
 class Node
 
-  attr_accessor :token
+  attr_accessor :contents
 
-  def initialize(token)
-    self.token = token
+  def initialize(contents)
+    self.contents = contents
   end
 
 end
@@ -85,7 +86,7 @@ end
 class StaticNode < Node
 
   def render(context)
-    self.token
+    self.contents
   end
 
 end
@@ -93,7 +94,7 @@ end
 class VariableNode < Node
 
   def render(context)
-    context[token.to_sym]
+    context[contents.to_sym]
   end
 
 end
@@ -119,12 +120,12 @@ class IfNode < Node
 
   def self.create(parser, token)
     # get the parts after the block type
-    parts = token[1].split.slice(1..-1)
+    parts = token.contents.split.slice(1..-1)
     node_list_true = parser.parse(['else', 'endif'])
     token = parser.next_token()
     var = parts.first
 
-    if token[1] == 'else'
+    if token.contents == 'else'
       node_list_false = parser.parse(['endif'])
       parser.remove_first_token()
     else

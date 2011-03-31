@@ -27,17 +27,18 @@ describe "Hiromi" do
         hiromi = Hiromi.new('Hello Allen{% if is_tall_enough %}, you are tall.{% endif %}')
         hiromi.render(context).should == 'Hello Allen, you are tall.'
       end
+
       it "renders the text outside of the true branch upon evaluating to false" do
         context[:is_tall_enough] = false
         hiromi = Hiromi.new('Hello Allen{% if is_tall_enough %}, you are tall.{% endif %}')
         hiromi.render(context).should == 'Hello Allen'
       end
+
       it "renders the text in else branch upon evaluating to false" do
         context[:is_tall_enough] = false
         hiromi = Hiromi.new("Hello Allen{% if is_tall_enough %}, you are tall.{% else %}, sorry, you aren't tall enough.{% endif %}")
         hiromi.render(context).should == "Hello Allen, sorry, you aren't tall enough."
       end
     end
-
   end
 end

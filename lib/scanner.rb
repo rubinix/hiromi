@@ -4,20 +4,21 @@ class Scanner
 
   def tokenize(data)
     @scanner = StringScanner.new(data)
-    result = []
+    tokens = []
 
     in_tag =  ['{{', '{%'].include?(@scanner.peek(2))
 
     until @scanner.eos?
       if in_tag
-        result << scan_tag()
+        tokens << scan_tag()
       else
-        result << scan_text()
+        static_token = scan_text()
+        tokens << static_token unless static_token.contents.empty?
       end
       in_tag = !in_tag
     end
 
-    result
+    tokens
   end
 
   def scan_tag()
@@ -32,10 +33,10 @@ class Scanner
 
     if text.start_with?('{{')
       text = text[2...-2].strip
-      [:variable_tag, text]
+      return Token.new(:variable_tag, text)
     elsif text.start_with?('{%')
       text = text[2...-2].strip
-      [:block_tag, text]
+      return Token.new(:block_tag, text)
     end
   end
 
@@ -49,7 +50,7 @@ class Scanner
       @scanner.terminate
     end
 
-    [:static, text]
+    Token.new(:static, text)
   end
 
   # Scans the string until the pattern is matched. Returns the substring

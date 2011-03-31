@@ -9,7 +9,8 @@ describe "Scanner" do
       scanner = Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[0]
-      token.should == [:static, "Hello, world!"]
+      token.type.should == :static
+      token.contents.should == "Hello, world!"
     end
 
   end
@@ -21,7 +22,8 @@ describe "Scanner" do
       scanner = Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[0]
-      token.should == [:static, "Hello, "]
+      token.type.should == :static
+      token.contents.should == "Hello, "
     end
 
     it "tokenizes variable tags" do
@@ -29,17 +31,45 @@ describe "Scanner" do
       scanner = Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[1]
-      token.should == [:variable_tag, "target"]
+      token.type.should == :variable_tag
+      token.contents.should == "target"
     end
   end
 
   context "when scanning text with block tags" do
-    it "tokenizes block tags" do
+    it "tokenizes block if tags" do
       text = "{% if passes_spec? %}"
       scanner = Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[0]
-      token.should == [:block_tag, "if passes_spec?"]
+      token.type.should == :block_tag
+      token.contents.should == "if passes_spec?"
+    end
+
+    it "tokenizes block endif tags" do
+      text = "{% if passes_spec? %} Bam {% endif %}"
+      scanner = Scanner.new
+      tokens = scanner.tokenize(text)
+      token = tokens[2]
+      token.type.should == :block_tag
+      token.contents.should == "endif"
+    end
+
+    it "tokenizes nested block if tags" do
+      text = "{% if passes_spec? %}" +
+          "The spec passes!" +
+          "{% if notify_parties? %}" +
+            "Notifying all parties" +
+          "{% else %}" +
+            "Crickets" +
+          "{% endif %}" +
+        "{% endif %}"
+
+      scanner = Scanner.new
+      tokens = scanner.tokenize(text)
+      tokens.size.should == 8
+      tokens[4].type.should == :block_tag
+      tokens[4].contents.should == "else"
     end
   end
 

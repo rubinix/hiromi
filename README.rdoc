@@ -4,10 +4,10 @@ Hiromi is a templating language that is meant to initially be a port of the Djan
 
 == Credit and inspriation
 Some algorithms, ideas, and inspiration come from the work of:
-* The Django templating system - see <http://www.djangoproject.com/>
-* defunkt's Mustache template library - see <https://github.com/defunkt/mustache>
+* The Django templating system - see http://www.djangoproject.com
+* defunkt's Mustache template library - see https://github.com/defunkt/mustache
 
-== Contributing to hiromi
+== Contributing to Hiromi
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
