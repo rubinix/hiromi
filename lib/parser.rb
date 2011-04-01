@@ -35,8 +35,9 @@ class Parser
 
     if block_type == 'if'
       return IfNode.create(self, token)
+    elsif block_type == 'for'
+      return ForEachNode.create(self, token)
     end
-
   end
 
   def next_token()
@@ -65,9 +66,11 @@ class NodeList
 
   def render(context)
     compiled_string = StringIO.new
+
     @nodes.each do |node|
       compiled_string << node.render(context)
     end
+
     compiled_string.string
   end
 
@@ -133,6 +136,37 @@ class IfNode < Node
     end
 
     IfNode.new(var, node_list_true, node_list_false)
+  end
+
+end
+
+class ForEachNode < Node
+
+  attr_accessor :var, :enumerable, :node_list
+
+  def initialize(var, enumerable, node_list)
+    self.var = var
+    self.enumerable = enumerable
+    self.node_list = node_list
+  end
+
+  def render(context)
+    compiled_string = StringIO.new
+    context[self.enumerable.to_sym].each do |obj|
+      context[var.to_sym] = obj
+      compiled_string << node_list.render(context)
+    end
+
+    compiled_string.string
+  end
+
+  def self.create(parser, token)
+    parts = token.contents.split.slice(1..-1)
+    node_list = parser.parse(['endfor'])
+    token = parser.next_token()
+    var, enumerable = parts[0], parts[2]
+
+    ForEachNode.new(var, enumerable, node_list)
   end
 
 end

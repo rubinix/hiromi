@@ -40,5 +40,16 @@ describe "Hiromi" do
         hiromi.render(context).should == "Hello Allen, sorry, you aren't tall enough."
       end
     end
+
+    context "when handling for block tags" do
+      it "renders a block for each item in the collection" do
+        context[:names] = ['Foo', 'Bar']
+        hiromi = Hiromi.new("{% for name in names %}Name is: {{ name }}, ")
+        hiromi.render(context).should == "Name is: Foo, Name is: Bar, "
+      end
+    end
+
+
   end
+
 end
