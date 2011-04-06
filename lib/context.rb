@@ -11,3 +11,7 @@ class Context
   end
 
 end
+
+class ForLoopContext
+  attr_accessor :counter, :counter0, :revcounter, :revcounter0, :first, :last, :parentloop
+end

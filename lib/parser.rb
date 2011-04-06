@@ -152,8 +152,24 @@ class ForEachNode < Node
 
   def render(context)
     compiled_string = StringIO.new
-    context.send(self.enumerable.to_sym).each do |obj|
+    context_enumerable = context.send(self.enumerable.to_sym)
+    first = context_enumerable[0]
+    last = context_enumerable[-1]
+    size = context_enumerable.size
+    context_enumerable.each_with_index do |obj, i|
       c = Context.new(var.to_sym => obj)
+
+      loop_context = ForLoopContext.new
+      loop_context.first = first
+      loop_context.last = last
+      loop_context.counter0 = i
+      loop_context.counter = i+1
+      loop_context.revcounter = size
+      loop_context.revcounter0 = size - 1
+      size -= 1
+
+      c.put(:forloop, loop_context)
+
       compiled_string << node_list.render(c)
     end
 

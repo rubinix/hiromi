@@ -49,10 +49,44 @@ describe "Hiromi" do
     end
 
     context "when handling for block tags" do
+      let :context do
+        Context.new(:names => ['Foo', 'Bar'])
+      end
       it "renders a block for each item in the collection" do
-        context.put(:names, ['Foo', 'Bar'])
         hiromi = Hiromi.new("{% for name in names %}Name is: {{ name }}, {% endfor %}")
         hiromi.render(context).should == "Name is: Foo, Name is: Bar, "
+      end
+
+      context "that contain magic forloop variables" do
+        it "can render a counter" do
+          hiromi = Hiromi.new("{% for name in names %}The counter is {{ forloop.counter }}, {% endfor %}")
+          hiromi.render(context).should == "The counter is 1, The counter is 2, "
+        end
+
+        it "can render a counter0" do
+          hiromi = Hiromi.new("{% for name in names %}The counter is {{ forloop.counter0 }}, {% endfor %}")
+          hiromi.render(context).should == "The counter is 0, The counter is 1, "
+        end
+
+        it "can render a revcounter" do
+          hiromi = Hiromi.new("{% for name in names %}The revcounter is {{ forloop.revcounter }}, {% endfor %}")
+          hiromi.render(context).should == "The revcounter is 2, The revcounter is 1, "
+        end
+
+        it "can render a revcounter0" do
+          hiromi = Hiromi.new("{% for name in names %}The revcounter0 is {{ forloop.revcounter0 }}, {% endfor %}")
+          hiromi.render(context).should == "The revcounter0 is 1, The revcounter0 is 0, "
+        end
+
+        it "can render first" do
+          hiromi = Hiromi.new("{% for name in names %}The first is {{ forloop.first }}, {% endfor %}")
+          hiromi.render(context).should == "The first is Foo, The first is Foo, "
+        end
+
+        it "can render last" do
+          hiromi = Hiromi.new("{% for name in names %}The last is {{ forloop.last }}, {% endfor %}")
+          hiromi.render(context).should == "The last is Bar, The last is Bar, "
+        end
       end
     end
 
