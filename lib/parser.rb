@@ -97,7 +97,7 @@ end
 class VariableNode < Node
 
   def render(context)
-    context.instance_eval(contents)
+    context.get(InvocationResolver.new(contents))
   end
 
 end
@@ -113,8 +113,7 @@ class IfNode < Node
   end
 
   def render(context)
-    # if self.var.eval(context)
-    if context.instance_eval(var) == true
+    if context.get(InvocationResolver.new(self.var)) == true
       return self.node_list_true.render(context)
     else
       return self.node_list_false.render(context)
@@ -150,14 +149,15 @@ class ForEachNode < Node
     self.node_list = node_list
   end
 
+  #TODO Refactor
   def render(context)
     compiled_string = StringIO.new
-    context_enumerable = context.send(self.enumerable.to_sym)
+    context_enumerable = context.get(InvocationResolver.new(self.enumerable))
     first = context_enumerable[0]
     last = context_enumerable[-1]
     size = context_enumerable.size
     context_enumerable.each_with_index do |obj, i|
-      c = Context.new(var.to_sym => obj)
+      context.push(var.to_sym => obj)
 
       loop_context = ForLoopContext.new
       loop_context.first = first
@@ -168,9 +168,15 @@ class ForEachNode < Node
       loop_context.revcounter0 = size - 1
       size -= 1
 
-      c.put(:forloop, loop_context)
+      begin
+        loop_context.parentloop = context.get(InvocationResolver.new('forloop'))
+      rescue NoMethodError
+      end
 
-      compiled_string << node_list.render(c)
+      context.put(:forloop, loop_context)
+
+      compiled_string << node_list.render(context)
+      context.pop()
     end
 
     compiled_string.string

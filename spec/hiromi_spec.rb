@@ -23,7 +23,7 @@ describe "Hiromi" do
       hiromi.render(context).should == 'Hello, world!'
     end
 
-    it "substitutes multiple string tokens with 'X'" do
+    it "substitutes multiple variable tags" do
       hiromi = Hiromi.new('Hello, {{ target }}, my name is {{ name }}!')
       hiromi.render(context).should == 'Hello, world, my name is Allen!'
     end
@@ -86,6 +86,12 @@ describe "Hiromi" do
         it "can render last" do
           hiromi = Hiromi.new("{% for name in names %}The last is {{ forloop.last }}, {% endfor %}")
           hiromi.render(context).should == "The last is Bar, The last is Bar, "
+        end
+
+        it "can render parentloop" do
+          context.put(:outside, [1,2,3])
+          hiromi = Hiromi.new("{% for val in outside %}{% for name in names %}The parent counter is {{ forloop.parentloop.counter }}, {% endfor %}{% endfor %}")
+          hiromi.render(context).should == "The parent counter is 1, The parent counter is 1, The parent counter is 2, The parent counter is 2, The parent counter is 3, The parent counter is 3, "
         end
       end
     end
