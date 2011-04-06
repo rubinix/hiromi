@@ -153,15 +153,15 @@ class ForEachNode < Node
   def render(context)
     compiled_string = StringIO.new
     context_enumerable = context.get(InvocationResolver.new(self.enumerable))
-    first = context_enumerable[0]
-    last = context_enumerable[-1]
+    first = 0
+    last = context_enumerable.size - 1
     size = context_enumerable.size
     context_enumerable.each_with_index do |obj, i|
       context.push(var.to_sym => obj)
 
       loop_context = ForLoopContext.new
-      loop_context.first = first
-      loop_context.last = last
+      loop_context.first = i == first
+      loop_context.last = i == last
       loop_context.counter0 = i
       loop_context.counter = i+1
       loop_context.revcounter = size

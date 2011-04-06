@@ -79,13 +79,13 @@ describe "Hiromi" do
         end
 
         it "can render first" do
-          hiromi = Hiromi.new("{% for name in names %}The first is {{ forloop.first }}, {% endfor %}")
-          hiromi.render(context).should == "The first is Foo, The first is Foo, "
+          hiromi = Hiromi.new("{% for name in names %}{{ forloop.first }}, {% endfor %}")
+          hiromi.render(context).should == "true, false, "
         end
 
         it "can render last" do
-          hiromi = Hiromi.new("{% for name in names %}The last is {{ forloop.last }}, {% endfor %}")
-          hiromi.render(context).should == "The last is Bar, The last is Bar, "
+          hiromi = Hiromi.new("{% for name in names %}{{ forloop.last }}, {% endfor %}")
+          hiromi.render(context).should == "false, true, "
         end
 
         it "can render parentloop" do
