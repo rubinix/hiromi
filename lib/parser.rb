@@ -97,7 +97,7 @@ end
 class VariableNode < Node
 
   def render(context)
-    context[contents.to_sym]
+    context.instance_eval(contents)
   end
 
 end
@@ -114,7 +114,7 @@ class IfNode < Node
 
   def render(context)
     # if self.var.eval(context)
-    if context[var.to_sym] == true
+    if context.instance_eval(var) == true
       return self.node_list_true.render(context)
     else
       return self.node_list_false.render(context)
@@ -152,9 +152,9 @@ class ForEachNode < Node
 
   def render(context)
     compiled_string = StringIO.new
-    context[self.enumerable.to_sym].each do |obj|
-      context[var.to_sym] = obj
-      compiled_string << node_list.render(context)
+    context.send(self.enumerable.to_sym).each do |obj|
+      c = Context.new(var.to_sym => obj)
+      compiled_string << node_list.render(c)
     end
 
     compiled_string.string
