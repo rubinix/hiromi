@@ -94,10 +94,45 @@ class StaticNode < Node
 
 end
 
+class Filter
+end
+
+class LowerFilter
+
+  def execute(data)
+    data.downcase
+  end
+
+end
+
+class LengthFilter
+
+  def execute(data)
+    data.length
+  end
+
+end
+
 class VariableNode < Node
 
   def render(context)
-    context.get(InvocationResolver.new(contents))
+    parts = self.contents.split('|')
+    var = parts[0]
+    filters = parts[1..-1].map {|filter_type| create_filter(filter_type) }
+    apply_filters(context.get(InvocationResolver.new(var)), filters)
+  end
+
+  #Refactor to use inject
+  def apply_filters(var, filters)
+    filters.each do |filter|
+      var = filter.execute(var)
+    end
+    var
+  end
+
+  def create_filter(filter_type)
+    return LowerFilter.new if filter_type == 'lower'
+    return LengthFilter.new if filter_type == 'length'
   end
 
 end
