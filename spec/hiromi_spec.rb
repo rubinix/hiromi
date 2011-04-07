@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe "Hiromi" do
+describe "Hiromi::Template" do
   it "renders plain text" do
     hiromi = Hiromi.new('Hello, world!')
     hiromi.render.should == 'Hello, world!'
@@ -93,27 +93,25 @@ describe "Hiromi" do
           hiromi = Hiromi.new("{% for val in outside %}{% for name in names %}The parent counter is {{ forloop.parentloop.counter }}, {% endfor %}{% endfor %}")
           hiromi.render(context).should == "The parent counter is 1, The parent counter is 1, The parent counter is 2, The parent counter is 2, The parent counter is 3, The parent counter is 3, "
         end
-
       end
     end
 
-    context "that contain filter expressions" do
-      it "downcases the variable with a 'lower' filter" do
+    context "that contains filter expressions" do
+      it "renders the variable downcased with a 'lower' filter" do
         hiromi = Hiromi.new("{{ name|lower }}")
         hiromi.render(context).should == 'allen'
       end
 
-      it "outputs the length of a variable with a 'length' filter" do
+      it "renders the length of a variable with a 'length' filter" do
         hiromi = Hiromi.new("{{ name|length }}")
         hiromi.render(context).should == '5'
       end
 
-      it "outputs the chained filters" do
+      it "renders the result of chained filters" do
         hiromi = Hiromi.new("{{ name|lower|length }}")
         hiromi.render(context).should == '5'
       end
     end
 
   end
-
 end

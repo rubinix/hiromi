@@ -1,33 +1,38 @@
 require 'scanner'
 require 'parser'
 require 'context'
+require 'railtie'
 
-class Hiromi
+module Hiromi
 
-  attr_accessor :node_list
+  class Template
 
-  def initialize(string)
-    self.node_list = compile_template(string)
-  end
+    attr_accessor :node_list
 
-  def self.from_file(path)
-    template_string = ''
-    File.open(path, 'r') do |file|
-      template_string = file.read()
+    def initialize(string)
+      self.node_list = compile_template(string)
     end
-    self.new(template_string)
-  end
 
-  def render(context={})
-    self.node_list.render(context)
-  end
+    def self.from_file(path)
+      template_string = ''
+      File.open(path, 'r') do |file|
+        template_string = file.read()
+      end
+      self.new(template_string)
+    end
 
-  private
+    def render(context={})
+      self.node_list.render(context)
+    end
 
-  def compile_template(string)
-    scanner = Scanner.new
-    parser = Parser.new(scanner.tokenize(string))
-    self.node_list = parser.parse()
+    private
+
+    def compile_template(string)
+      scanner = Hiromi::Scanner.new
+      parser = Hiromi::Parser.new(scanner.tokenize(string))
+      self.node_list = parser.parse()
+    end
+
   end
 
 end
