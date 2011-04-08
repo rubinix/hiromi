@@ -21,4 +21,8 @@ module Hiromi
 
   end
 
+  class Railtie < Rails::Railtie
+    ActionView::Template.register_template_handler(:hiromi, Hiromi::TemplateHandler)
+  end
+
 end
