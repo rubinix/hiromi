@@ -1,12 +1,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe "Scanner" do
+describe "Hirmoi::Scanner" do
 
   context "when scanning plain text" do
 
     it "tokenizes plain text" do
       text = "Hello, world!"
-      scanner = Scanner.new
+      scanner = Hiromi::Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[0]
       token.type.should == :static
@@ -19,7 +19,7 @@ describe "Scanner" do
 
     it "tokenizes plain text" do
       text = "Hello, {{ target }}!"
-      scanner = Scanner.new
+      scanner = Hiromi::Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[0]
       token.type.should == :static
@@ -28,7 +28,7 @@ describe "Scanner" do
 
     it "tokenizes variable tags" do
       text = "Hello, {{ target }}!"
-      scanner = Scanner.new
+      scanner = Hiromi::Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[1]
       token.type.should == :variable_tag
@@ -39,7 +39,7 @@ describe "Scanner" do
   context "when scanning text with block tags" do
     it "tokenizes block if tags" do
       text = "{% if passes_spec? %}"
-      scanner = Scanner.new
+      scanner = Hiromi::Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[0]
       token.type.should == :block_tag
@@ -48,7 +48,7 @@ describe "Scanner" do
 
     it "tokenizes block endif tags" do
       text = "{% if passes_spec? %} Bam {% endif %}"
-      scanner = Scanner.new
+      scanner = Hiromi::Scanner.new
       tokens = scanner.tokenize(text)
       token = tokens[2]
       token.type.should == :block_tag
@@ -65,7 +65,7 @@ describe "Scanner" do
           "{% endif %}" +
         "{% endif %}"
 
-      scanner = Scanner.new
+      scanner = Hiromi::Scanner.new
       tokens = scanner.tokenize(text)
       tokens.size.should == 8
       tokens[4].type.should == :block_tag

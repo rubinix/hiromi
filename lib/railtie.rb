@@ -23,6 +23,7 @@ module Hiromi
 
   class Railtie < Rails::Railtie
     ActionView::Template.register_template_handler(:hiromi, Hiromi::TemplateHandler)
+    Hiromi::Configuration::Templates.home = File.join(RAILS_ROOT, 'app', 'views')
   end
 
 end

@@ -19,6 +19,7 @@ Jeweler::Tasks.new do |gem|
   gem.description = %Q{Django like templating}
   gem.email = "allenriddle@gmail.com"
   gem.authors = ["Allen Riddle"]
+  gem.files = FileList['lib/**/*.rb']
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
   #  gem.add_runtime_dependency 'jabber4r', '> 0.1'

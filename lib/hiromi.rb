@@ -1,6 +1,8 @@
 require 'scanner'
+require 'nodes'
 require 'parser'
 require 'context'
+require 'configuration'
 require 'railtie'
 
 module Hiromi
@@ -15,7 +17,7 @@ module Hiromi
 
     def self.from_file(path)
       template_string = ''
-      File.open(path, 'r') do |file|
+      File.open(File.join(Configuration::Templates.home, path), 'r') do |file|
         template_string = file.read()
       end
       self.new(template_string)

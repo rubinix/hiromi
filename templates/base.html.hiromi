@@ -1,0 +1,7 @@
+This is the base
+
+{% block target %}
+Bam
+{% endblock %}
+
+Done
