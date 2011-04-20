@@ -1,3 +1,6 @@
+require 'hiromi'
+require 'rails'
+
 module Hiromi
 
   #TODO Extract this into a separate gem: hiromi-rails
@@ -6,7 +9,7 @@ module Hiromi
 
     def compile(template)
       <<-HIROMI
-        hiromi = Hiromi::Template.new('#{template.source}')
+        hiromi = Hiromi::Template.new(%{#{template.source}})
         variables = controller.instance_variable_names
 
         hash = {}
@@ -22,8 +25,10 @@ module Hiromi
   end
 
   class Railtie < Rails::Railtie
-    ActionView::Template.register_template_handler(:hiromi, Hiromi::TemplateHandler)
-    Hiromi::Configuration::Templates.home = File.join(RAILS_ROOT, 'app', 'views')
+    initializer "hiromi.initialize" do |app|
+      ActionView::Template.register_template_handler(:hiromi, Hiromi::TemplateHandler)
+      Hiromi::Configuration::Templates.home = File.join(app.root.to_s, 'app', 'views')
+    end
   end
 
 end
