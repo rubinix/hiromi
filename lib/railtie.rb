@@ -9,17 +9,17 @@ module Hiromi
 
     def compile(template)
       <<-HIROMI
-        hiromi = Hiromi::Template.new(%{#{template.source}})
-        variables = controller.instance_variable_names
+          hiromi = Hiromi::Template.new(%{#{template.source}})
+          variables = controller.instance_variable_names
 
-        hash = {}
-        variables.each do |name|
-          hash[name[1..-1].to_sym] = controller.instance_variable_get(name)
-        end
+          hash = {}
+          variables.each do |name|
+            hash[name[1..-1].to_sym] = controller.instance_variable_get(name)
+          end
 
-        hiromi_context = Hiromi::Context.new(hash)
-        hiromi.render(hiromi_context)
-      HIROMI
+          hiromi_context = Hiromi::Context.new(hash)
+          hiromi.render(hiromi_context)
+        HIROMI
     end
 
   end

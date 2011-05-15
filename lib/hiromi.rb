@@ -3,6 +3,8 @@ require 'nodes'
 require 'parser'
 require 'context'
 require 'configuration'
+require 'exceptions'
+require 'expression_parser'
 require 'railtie'
 
 module Hiromi

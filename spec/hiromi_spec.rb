@@ -32,20 +32,144 @@ describe "Hiromi::Template" do
     context "when handling if blocks" do
       it "renders the text in the true branch upon evaluating to true" do
         context.put(:should_execute?, true)
-        hiromi = Hiromi::Template.new('Hello world{% if should_execute? %}, how are you?{% endif %}')
-        hiromi.render(context).should == 'Hello world, how are you?'
+        hiromi = Hiromi::Template.new('{% if should_execute? %}In true{% endif %}')
+        hiromi.render(context).should == 'In true'
       end
 
       it "renders the text outside of the true branch upon evaluating to false" do
         context.put(:should_execute?, false)
-        hiromi = Hiromi::Template.new('Hello world{% if should_execute? %}, how are you?{% endif %}')
+        hiromi = Hiromi::Template.new('Hello world{% if should_execute? %}In true{% endif %}')
         hiromi.render(context).should == 'Hello world'
       end
 
       it "renders the text in else branch upon evaluating to false" do
         context.put(:should_execute?, false)
-        hiromi = Hiromi::Template.new("Hello world{% if should_execute? %}, how are you?{% else %}, nothing else.{% endif %}")
-        hiromi.render(context).should == "Hello world, nothing else."
+        hiromi = Hiromi::Template.new("{% if should_execute? %}In true{% else %}In else{% endif %}")
+        hiromi.render(context).should == "In else"
+      end
+
+      context "that contains operators" do
+        it "evaluates 'and' operators to true" do
+          context.put(:should_execute_a?, true)
+          hiromi = Hiromi::Template.new("Hello world{% if should_execute_a? and should_execute_a? %}, how are you?{% endif %}")
+          hiromi.render(context).should == "Hello world, how are you?"
+        end
+
+        it "evaluates 'and' operators to false" do
+          context.put(:should_execute_a?, true)
+          context.put(:should_execute_b?, false)
+          hiromi = Hiromi::Template.new("Hello world{% if should_execute_a? and should_execute_b? %}, how are you?{% endif %}")
+          hiromi.render(context).should == "Hello world"
+        end
+
+        it "evaluates 'or' operators to true" do
+          context.put(:should_execute_a?, true)
+          context.put(:should_execute_b?, false)
+          hiromi = Hiromi::Template.new("Hello world{% if should_execute_a? or should_execute_b? %}, how are you?{% endif %}")
+          hiromi.render(context).should == "Hello world, how are you?"
+        end
+
+        it "evaluates 'or' operators to false" do
+          context.put(:should_execute_a?, false)
+          context.put(:should_execute_b?, false)
+          hiromi = Hiromi::Template.new("Hello world{% if should_execute_a? or should_execute_b? %}, how are you?{% endif %}")
+          hiromi.render(context).should == "Hello world"
+        end
+
+        it "evaluates 'in' operators to true" do
+          context.put(:numbers, [1,2])
+          hiromi = Hiromi::Template.new("{% if 1 in numbers %}Bam{% endif %}")
+          hiromi.render(context).should == "Bam"
+        end
+
+        it "evaluates 'in' operators to false" do
+          context.put(:numbers, [1,2])
+          hiromi = Hiromi::Template.new("{% if 3 in numbers %}Bam{% endif %}Nope")
+          hiromi.render(context).should == "Nope"
+        end
+
+        it "evaluates 'not in' operators to true" do
+          context.put(:numbers, [1,2])
+          hiromi = Hiromi::Template.new("{% if 3 not in numbers %}Bam{% endif %}")
+          hiromi.render(context).should == "Bam"
+        end
+
+        it "evaluates 'not in' operators to false" do
+          context.put(:numbers, [1,2])
+          hiromi = Hiromi::Template.new("{% if 1 not in numbers %}Bam{% endif %}Nope")
+          hiromi.render(context).should == "Nope"
+        end
+
+        it "evaluates '=' operators to true" do
+          hiromi = Hiromi::Template.new("{% if 1 = 1 %}True{% endif %}")
+          hiromi.render(context).should == "True"
+        end
+
+        it "evaluates '=' operators to false" do
+          hiromi = Hiromi::Template.new("{% if 1 = 2 %}True{% endif %}Nope")
+          hiromi.render(context).should == "Nope"
+        end
+
+        it "evaluates '==' operators to true" do
+          hiromi = Hiromi::Template.new("{% if 1 == 1 %}True{% endif %}")
+          hiromi.render(context).should == "True"
+        end
+
+        it "evaluates '==' operators to false" do
+          hiromi = Hiromi::Template.new("{% if 1 == 2 %}True{% endif %}Nope")
+          hiromi.render(context).should == "Nope"
+        end
+
+        it "evaluates '!=' operators to true" do
+          hiromi = Hiromi::Template.new("{% if 1 != 2 %}True{% endif %}")
+          hiromi.render(context).should == "True"
+        end
+
+        it "evaluates '!=' operators to false" do
+          hiromi = Hiromi::Template.new("{% if 1 != 1 %}True{% endif %}Nope")
+          hiromi.render(context).should == "Nope"
+        end
+
+        it "evaluates '>' operators to true" do
+          hiromi = Hiromi::Template.new("{% if 3 > 2 %}True{% endif %}")
+          hiromi.render(context).should == "True"
+        end
+
+        it "evaluates '>' operators to false" do
+          hiromi = Hiromi::Template.new("{% if 1 > 1 %}True{% endif %}Nope")
+          hiromi.render(context).should == "Nope"
+        end
+
+        it "evaluates '>=' operators to true" do
+          hiromi = Hiromi::Template.new("{% if 3 >= 3 %}True{% endif %}")
+          hiromi.render(context).should == "True"
+        end
+
+        it "evaluates '>=' operators to false" do
+          hiromi = Hiromi::Template.new("{% if 3 >= 4 %}True{% endif %}Nope")
+          hiromi.render(context).should == "Nope"
+        end
+
+        it "evaluates '<' operators to true" do
+          hiromi = Hiromi::Template.new("{% if 2 < 3 %}True{% endif %}")
+          hiromi.render(context).should == "True"
+        end
+
+        it "evaluates '<' operators to false" do
+          hiromi = Hiromi::Template.new("{% if 1 < 1 %}True{% endif %}Nope")
+          hiromi.render(context).should == "Nope"
+        end
+
+        it "evaluates '<=' operators to true" do
+          hiromi = Hiromi::Template.new("{% if 3 <= 3 %}True{% endif %}")
+          hiromi.render(context).should == "True"
+        end
+
+        it "evaluates '<=' operators to false" do
+          hiromi = Hiromi::Template.new("{% if 4 <= 3 %}True{% endif %}Nope")
+          hiromi.render(context).should == "Nope"
+        end
+
       end
     end
 
@@ -53,6 +177,7 @@ describe "Hiromi::Template" do
       let :context do
         Hiromi::Context.new(:names => ['Foo', 'Bar'])
       end
+
       it "renders a block for each item in the collection" do
         hiromi = Hiromi::Template.new("{% for name in names %}Name is: {{ name }}, {% endfor %}")
         hiromi.render(context).should == "Name is: Foo, Name is: Bar, "

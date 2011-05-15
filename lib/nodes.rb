@@ -90,6 +90,13 @@ module Hiromi
 
   class VariableNode < Node
 
+    def initialize(contents)
+      super(contents)
+      # if contents !~ /^\s*\w+\s*$/
+        # raise TemplateSyntaxError
+      # end
+    end
+
     def render(context)
       parts = self.contents.split('|')
       var = parts[0]
@@ -123,7 +130,7 @@ module Hiromi
     end
 
     def render(context)
-      if context.get(InvocationResolver.new(self.var)) == true
+      if self.var.eval(context)
         return self.node_list_true.render(context)
       else
         return self.node_list_false.render(context)
@@ -133,9 +140,9 @@ module Hiromi
     def self.create(parser, token)
       # get the parts after the block type
       parts = token.contents.split.slice(1..-1)
+      var = ExpressionParser.new(parts).parse()
       node_list_true = parser.parse(['else', 'endif'])
       token = parser.next_token()
-      var = parts.first
 
       if token.contents == 'else'
         node_list_false = parser.parse(['endif'])

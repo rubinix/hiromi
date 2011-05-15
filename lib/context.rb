@@ -11,6 +11,8 @@ module Hiromi
 
     def get(resolver)
       result = @current[resolver.key]
+      return resolver.key if result.nil?
+
       result = result.instance_eval(resolver.message) if resolver.message
       result
     end
@@ -38,9 +40,22 @@ module Hiromi
     attr_accessor :key, :message
 
     def initialize(contents)
-      parts = contents.split(".")
-      self.key = parts.shift.to_sym
-      self.message = parts.join(".") unless parts.empty?
+
+      if numeric?(contents)
+        self.key = Float(contents)
+      elsif contents =~ /^\s*(true|false)\s*$/
+        self.key = contents == true
+      else
+        parts = contents.split(".")
+        key = parts.shift
+        self.key = key.to_sym
+        self.message = parts.join(".") unless parts.empty?
+      end
+
+    end
+
+    def numeric?(object)
+      true if Float(object) rescue false
     end
 
   end
